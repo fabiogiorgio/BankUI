@@ -1,10 +1,10 @@
 <template>
     <nav>
     <ul>
-      <li><router-link to="/disclaimers">Disclaimers</router-link></li>
+      <!--<li><router-link to="/disclaimers">Disclaimers</router-link></li>-->
       <li><router-link to="/users">User</router-link></li>
-      <li><router-link to="/termsandconditions">Terms and Conditions</router-link></li>
-      <li><router-link to="/admin">Admin</router-link></li>
+      <li><router-link to="/termsandconditions">Transactions</router-link></li>
+      <li><router-link to="/admin">Accounts</router-link></li>
       <li><router-link to="/login">Logout</router-link></li>
     </ul>
   </nav>

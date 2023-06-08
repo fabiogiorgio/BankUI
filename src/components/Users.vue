@@ -1,84 +1,134 @@
 <template>
-    <welcomeview></welcomeview>
-    <h3>Deactivate the desired user by clicking on the green button</h3>
     <div>
+      <welcomeview></welcomeview>
+      <h3>Deactivate the desired user by clicking on the green button</h3>
+      <div>
         <ul class="user-list">
-            <li v-for="user in users" :key="user.id">
-                {{ user.firstName }}
-                <button @click="deactivateUser(user.id)">Deactivate</button>
-            </li>
+          <li v-for="user in users" :key="user.id">
+            {{ user.firstName }}
+            <button @click="deactivateUser(user.id)">Deactivate</button>
+            <button @click="editUser(user.id)">Edit</button>
+          </li>
         </ul>
+      </div>
+      <div v-if="editingUserId">
+        <h3>Edit User</h3>
+        <form @submit.prevent="saveUser">
+          <label for="firstName">First Name:</label>
+          <input type="text" id="firstName" v-model="editedUser.firstName" required>
+          <br>
+          <label for="lastName">Last Name:</label>
+          <input type="text" id="lastName" v-model="editedUser.lastName" required>
+          <br>
+          <label for="mobileNumber">Mobile Number:</label>
+          <input type="text" id="mobileNumber" v-model="editedUser.mobileNumber" required>
+          <br>
+          <label for="dateOfBirth">Date of Birth:</label>
+          <input type="date" id="dateOfBirth" v-model="editedUser.dateOfBirth" required>
+          <br>
+          <button type="submit">Save</button>
+        </form>
+      </div>
     </div>
-</template>
-
-<script>
-import axios from 'axios';
-import WelcomeView from './WelcomeView.vue'
-export default {
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  import WelcomeView from './WelcomeView.vue'
+  
+  export default {
     name: 'Users',
     components: {
-        welcomeview: WelcomeView
+      welcomeview: WelcomeView
     },
     data() {
-        return {
-            users: []
+      return {
+        users: [],
+        editingUserId: null,
+        editedUser: {
+          firstName: '',
+          lastName: '',
+          mobileNumber: '',
+          dateOfBirth: ''
         }
+      }
     },
     mounted() {
-        this.getUsers()
+      this.getUsers()
     },
     methods: {
-        getUsers(){
-            const token = localStorage.getItem('bearerToken');
-            console.log(token)
-            const header = {
-            'Content-Type' : 'application/x-www-form-urlencoded',
-            'Authorization': `Bearer ${token}`,
-            'Access-Control-Allow-Origin' : 'http://localhost:8082/',
-            'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-            }
-            axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-           axios.get('http://localhost:8080/api/users', { headers: header
-            })
-            .then(response => {
-                this.users = response.data;
-            });
-        },
-        deactivateUser(id) {
-            axios.put(``)
-                .then(() => {
-                    this.getUsers()
-                });
-        }
+      getUsers() {
+        const token = localStorage.getItem('bearerToken');
+        const header = {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${token}`,
+          'Access-Control-Allow-Origin': 'http://localhost:8081/',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+        };
+  
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+        axios.get('http://localhost:8080/api/users', { headers: header })
+          .then(response => {
+            this.users = response.data;
+          });
+      },
+      deactivateUser(id) {
+        axios.put(`http://localhost:8080/api/users/${id}/deactivate`)
+          .then(() => {
+            this.getUsers();
+          });
+      },
+      editUser(id) {
+        this.editingUserId = id;
+        const user = this.users.find(user => user.id === id);
+        this.editedUser = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          mobileNumber: user.mobileNumber,
+          dateOfBirth: user.dateOfBirth
+        };
+      },
+      saveUser() {
+        axios.put(`http://localhost:8080/api/users/${this.editingUserId}`, this.editedUser)
+          .then(() => {
+            this.editingUserId = null;
+            this.editedUser = {
+              firstName: '',
+              lastName: '',
+              mobileNumber: '',
+              dateOfBirth: ''
+            };
+            this.getUsers();
+          });
+      }
     }
-}
-</script>
-
-<style>
-.user-list {
+  }
+  </script>
+  
+  <style>
+  .user-list {
     list-style: none;
     padding: 0;
-}
-
-.user-list li {
+  }
+  
+  .user-list li {
     padding: 10px;
     border-bottom: 1px solid #ccc;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.user-list button {
+  }
+  
+  .user-list button {
     background-color: #4CAF50;
     color: white;
     padding: 5px 10px;
     border: none;
     cursor: pointer;
-}
-
-.user-list button:hover {
+  }
+  
+  .user-list button:hover {
     background-color: #3e8e41;
-}
-</style>
-
-
+  }
+  </style>
+  

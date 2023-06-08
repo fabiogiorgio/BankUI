@@ -16,7 +16,7 @@
 import axios from 'axios';
 import WelcomeView from './WelcomeView.vue'
 export default {
-    name: 'TermsAndConditions',
+    name: 'Transactions',
     components: {
         welcomeview: WelcomeView
     },

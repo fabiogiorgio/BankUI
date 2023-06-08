@@ -1,7 +1,7 @@
 <template>
   <div v-if="!loggedIn">
     <form name="login-form">
-      <img src="@/assets/SawaLogo.png" alt="Logo">
+      <img src="@/assets/ilovejava.jpg" alt="Logo">
       <div class="mb-3">
         <label for="userName">Username: </label>
         <input type="text" id="userName" v-model="input.userName" />
