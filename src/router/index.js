@@ -14,16 +14,12 @@ const routes = [
     component: () => import('../components/Disclaimers.vue')
   },
   {
-    path: "/termsandconditions",
-    component: () => import('../components/TermsAndConditions.vue')
+    path: "/accounts",
+    component: () => import('../components/Accounts.vue')
   },
   {
     path: "/users",
     component: () => import('../components/Users.vue')
-  },
-  {
-    path: "/admin",
-    component: () => import('../components/Admin.vue')
   }
 ]
 
