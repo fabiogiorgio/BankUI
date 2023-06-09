@@ -1,21 +1,21 @@
 <template>
-  <div v-if="!loggedIn">
+  <div v-if="!loggedIn" class="login-container">
     <form name="login-form">
-      <img src="@/assets/ilovejava.jpg" alt="Logo">
-      <div class="mb-3">
-        <label for="userName">Username: </label>
+      <img src="@/assets/ilovejava.jpg" alt="Logo" class="logo">
+      <div class="form-group">
+        <label for="userName">Username:</label>
         <input type="text" id="userName" v-model="input.userName" />
       </div>
-      <div class="mb-3">
-        <label for="password">Password: </label>
+      <div class="form-group">
+        <label for="password">Password:</label>
         <input type="password" id="password" v-model="input.password" />
       </div>
-      <button class="btn btn-outline-dark" type="submit" v-on:click.prevent="login()">
-        Login
-      </button>
+      <button type="submit" v-on:click.prevent="login()">Login</button>
+      <p v-if="output" class="error-message">{{ output }}</p>
     </form>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -66,3 +66,56 @@ export default {
   },
 }
 </script>
+<style>
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto;
+  width: 150px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: inline-block;
+  width: 100px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 200px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+</style>
+

@@ -1,40 +1,55 @@
 <template>
-    <div>
-      <welcomeview></welcomeview>
-      <h3></h3>
-      <div>
-        <ul class="account_list">
-          <li v-for="account in accounts" :key="account.id">
-            Account Id:{{account.id}}, Account Type:{{ account.accountType }}, Account Status:{{account.accountStatus}}, Transaction Limit: {{account.transactionLimit}}
-            <button @click="deactivateAccount
-            (account.id)">Deactivate</button>
-            <button @click="editAccount(account.id)">Edit</button>
-          </li>
-        </ul>
-      </div>
-      <div v-if="editingAccountId">
-        <h3>Edit User</h3>
-        <form @submit.prevent="saveUser">
-          <label for="accountType">account Type:</label>
-          <input type="text" id="accountType" v-model="editedAccount.accountType" required>
-          <br>
-          <label for="accountStatus">account Status:</label>
-          <input type="text" id="accountStatus" v-model="editedAccount.accountStatus" required>
-          <br>
-          <label for="transactionLimit">transaction Limit:</label>
-          <input type="long" id="transactionLimit" v-model="editedAccount.transactionLimit" required>
-          <br>
-          <label for="dayLimit">day Limit:</label>
-          <input type="long" id="dayLimit" v-model="editedAccount.dayLimit" required>
-          <br>
-           <label for="absoluteLimit">absolute Limit:</label>
-          <input type="long" id="absoluteLimit" v-model="editedAccount.absoluteLimit" required>
-          <br>
-          <button type="submit">Save</button>
-        </form>
-      </div>
+  <div class="container">
+    <welcomeview></welcomeview>
+    <h3>Deactivate the desired account by clicking on the deactivate button</h3>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Account Id</th>
+            <th>Account Type</th>
+            <th>Account Status</th>
+            <th>Transaction Limit</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="account in accounts" :key="account.id">
+            <td>{{ account.id }}</td>
+            <td>{{ account.accountType }}</td>
+            <td>{{ account.accountStatus }}</td>
+            <td>{{ account.transactionLimit }}</td>
+            <td>
+              <button @click="deactivateAccount(account.id)">Deactivate</button>
+            </td>
+            <td>
+              <button @click="editAccount(account.id)">Edit</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </template>
+    <div v-if="editingAccountId" class="form-container">
+      <h3>Edit Account</h3>
+      <form @submit.prevent="saveUser">
+        <label for="accountType">Account Type:</label>
+        <input type="text" id="accountType" v-model="editedAccount.accountType" required>
+        <label for="accountStatus">Account Status:</label>
+        <input type="text" id="accountStatus" v-model="editedAccount.accountStatus" required>
+        <label for="transactionLimit">Transaction Limit:</label>
+        <input type="long" id="transactionLimit" v-model="editedAccount.transactionLimit" required>
+        <label for="dayLimit">Day Limit:</label>
+        <input type="long" id="dayLimit" v-model="editedAccount.dayLimit" required>
+        <label for="absoluteLimit">Absolute Limit:</label>
+        <input type="long" id="absoluteLimit" v-model="editedAccount.absoluteLimit" required>
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+</template>
+
+
   
   <script>
   import axios from 'axios';
@@ -113,29 +128,95 @@
   </script>
   
   <style>
-  .account_list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .account_list li {
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .account_list button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .account_list button:hover {
-    background-color: #3e8e41;
-  }
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.heading {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f5f5f5;
+}
+
+.table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.table button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.table button:hover {
+  background-color: #3e8e41;
+}
+
+.form-container {
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+}
+
+.form-container h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.form-container form {
+  display: grid;
+  grid-template-columns: 100px auto;
+  grid-gap: 10px;
+  align-items: center;
+}
+
+.form-container label {
+  font-weight: bold;
+}
+
+.form-container input[type="text"],
+.form-container input[type="long"] {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.form-container button[type="submit"] {
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.form-container button[type="submit"]:hover {
+  background-color: #555;
+}
+
+
   </style>
   
