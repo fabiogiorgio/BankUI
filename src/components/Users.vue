@@ -1,185 +1,230 @@
 <template>
   <div class="container">
     <welcomeview></welcomeview>
-    <h3>Deactivate the desired user by clicking on the deactivate button</h3>
-    <div>
-      <ul class="user-list">
-        <li v-for="user in users" :key="user.id">
-          {{ user.firstName }}
-          <button @click="deactivateUser(user.id)">Deactivate</button>
-          <button @click="editUser(user.id)">Edit</button>
-        </li>
-      </ul>
-    </div>
-    <div v-if="editingUserId" class="form-container">
-      <h3>Edit User</h3>
-      <form @submit.prevent="saveUser">
-        <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" v-model="editedUser.firstName" required>
-        <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" v-model="editedUser.lastName" required>
-        <label for="mobileNumber">Mobile Number:</label>
-        <input type="text" id="mobileNumber" v-model="editedUser.mobileNumber" required>
-        <label for="dateOfBirth">Date of Birth:</label>
-        <input type="date" id="dateOfBirth" v-model="editedUser.dateOfBirth">
-        <button type="submit">Save</button>
-      </form>
+    <div class="user-list">
+      <h3>Deactivate the desired user by clicking on the deactivate button</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Status</th>
+            <th>Mobile Number</th>
+            <th>Date of Birth</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id">
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.status }}</td>
+            <td>{{ user.mobileNumber }}</td>
+            <td>{{ user.dateOfBirth }}</td>
+            <td>
+              <button @click="deactivateUser(user.id)">Deactivate</button>
+              <button @click="editUser(user.id)">Edit</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div v-if="editingUserId !== null" class="edit-form">
+        <h3>Edit User</h3>
+        <form @submit.prevent="saveUser">
+          <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" v-model="editedUser.firstName" required>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" v-model="editedUser.lastName" required>
+          </div>
+          <div class="form-group">
+            <label for="mobileNumber">Mobile Number:</label>
+            <input type="text" id="mobileNumber" v-model="editedUser.mobileNumber" required>
+          </div>
+          <div class="form-group">
+            <label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" id="dateOfBirth" v-model="editedUser.dateOfBirth">
+          </div>
+          <div class="form-group">
+            <label for="status">Status:</label>
+            <input type="text" id="status" v-model="editedUser.status" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit">Save</button>
+            <button type="button" @click="cancelEdit">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
-  
-  <script>
-  import axios from 'axios';
-  import WelcomeView from './WelcomeView.vue'
-  
-  export default {
-    name: 'Users',
-    components: {
-      welcomeview: WelcomeView
-    },
-    data() {
-      return {
-        users: [],
-        editingUserId: null,
-        editedUser: {
-          firstName: '',
-          lastName: '',
-          mobileNumber: '',
-          dateOfBirth: ''
-        }
-      }
-    },
-    mounted() {
-      this.getUsers()
-    },
-    methods: {
-      getUsers() {
-        const token = localStorage.getItem('bearerToken');
-        const header = {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Bearer ${token}`,
-          'Access-Control-Allow-Origin': 'http://localhost:8081/',
-          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-        };
-  
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-        axios.get('http://localhost:8080/api/users', { headers: header })
-          .then(response => {
-            this.users = response.data;
-          });
-      },
-      deactivateUser(id) {
-        axios.put(`http://localhost:8080/api/users/${id}/deactivate`)
-          .then(() => {
-            this.getUsers();
-          });
-      },
-      editUser(id) {
-        this.editingUserId = id;
-        const user = this.users.find(user => user.id === id);
-        this.editedUser = {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          mobileNumber: user.mobileNumber,
-          dateOfBirth: user.dateOfBirth
-        };
-      },
-      saveUser() {
-        axios.put(`http://localhost:8080/api/users/${this.editingUserId}`, this.editedUser)
-          .then(() => {
-            this.editingUserId = null;
-            this.editedUser = {
-              firstName: '',
-              lastName: '',
-              mobileNumber: '',
-              dateOfBirth: ''
-            };
-            this.getUsers();
-          });
+<script>
+import axios from 'axios';
+import WelcomeView from './WelcomeView.vue'
+
+export default {
+  name: 'Users',
+  components: {
+    welcomeview: WelcomeView
+  },
+  data() {
+    return {
+      users: [],
+      editingUserId: null,
+      editedUser: {
+        firstName: '',
+        lastName: '',
+        mobileNumber: '',
+        dateOfBirth: '',
+        status: ''
       }
     }
+  },
+  mounted() {
+    this.getUsers()
+  },
+  methods: {
+    getUsers() {
+      const token = localStorage.getItem('bearerToken');
+      const header = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Bearer ${token}`,
+        'Access-Control-Allow-Origin': 'http://localhost:8081/',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+      };
+
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+      axios.get('http://localhost:8080/api/users', { headers: header })
+        .then(response => {
+          this.users = response.data;
+        });
+    },
+    deactivateUser(id) {
+      axios.delete(`http://localhost:8080/api/users/${id}`)
+        .then(() => {
+          this.getUsers();
+        });
+    },
+    editUser(id) {
+      this.editingUserId = id;
+      const user = this.users.find(user => user.id === id);
+      this.editedUser = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        mobileNumber: user.mobileNumber,
+        dateOfBirth: user.dateOfBirth,
+        status: user.status
+      };
+    },
+    saveUser() {
+      axios.put(`http://localhost:8080/api/users/${this.editingUserId}`, this.editedUser)
+        .then(() => {
+          this.editingUserId = null;
+          this.editedUser = {
+            firstName: '',
+            lastName: '',
+            mobileNumber: '',
+            dateOfBirth: '',
+            status: ''
+          };
+          this.getUsers();
+        });
+    },
+    cancelEdit() {
+      this.editingUserId = null;
+      this.editedUser = {
+        firstName: '',
+        lastName: '',
+        mobileNumber: '',
+        dateOfBirth: '',
+        status: ''
+      };
+    }
   }
-  </script>
-  
-  <style>
-  .container {
+}
+</script>
+
+<style>
+.container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
 }
 
-.heading {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
 .user-list {
-  list-style: none;
-  padding: 0;
-}
-
-.user-list li {
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.user-list button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 5px 10px;
-  border: none;
-  cursor: pointer;
-}
-
-.user-list button:hover {
-  background-color: #3e8e41;
-}
-
-.form-container {
   margin-top: 20px;
-  border-top: 1px solid #ccc;
-  padding-top: 20px;
 }
 
-.form-container h3 {
+h3 {
   font-size: 20px;
   margin-bottom: 10px;
 }
 
-.form-container form {
-  display: grid;
-  grid-template-columns: 100px auto;
-  grid-gap: 10px;
-  align-items: center;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.form-container label {
+table th,
+table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+table th {
+  background-color: #f4f4f4;
   font-weight: bold;
+  text-align: left;
 }
 
-.form-container input[type="text"],
-.form-container input[type="date"] {
+.edit-form {
+  background-color: #fff;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.edit-form h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"] {
+  width: 100%;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 3px;
 }
 
-.form-container button[type="submit"] {
-  padding: 10px 20px;
+.form-actions {
+  margin-top: 10px;
+}
+
+.form-actions button {
+  padding: 8px 12px;
   background-color: #333;
   color: #fff;
   border: none;
   border-radius: 3px;
   cursor: pointer;
+  margin-right: 5px;
 }
 
-.form-container button[type="submit"]:hover {
+.form-actions button[type="submit"]:hover,
+.form-actions button[type="button"]:hover {
   background-color: #555;
 }
-
-  </style>
-  
+</style>

@@ -21,7 +21,7 @@
             <td>{{ account.accountStatus }}</td>
             <td>{{ account.transactionLimit }}</td>
             <td>
-              <button @click="deactivateAccount(account.id)">Deactivate</button>
+              <button @click="deactivateAccount(account.id)" >Deactivate</button>
             </td>
             <td>
               <button @click="editAccount(account.id)">Edit</button>
@@ -123,7 +123,7 @@
       },
       deactivateAccount
       (id) {
-        axios.put(`http://localhost:8080/api/accounts/${id}/deactivate`)
+        axios.delete(`http://localhost:8080/api/accounts/${id}`)
           .then(() => {
             this.getAccounts();
           });
@@ -292,7 +292,6 @@
 .form-container button[type="submit"]:hover {
   background-color: #555;
 }
-
 
   </style>
   
