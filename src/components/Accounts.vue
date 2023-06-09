@@ -46,6 +46,28 @@
         <button type="submit">Save</button>
       </form>
     </div>
+    <div class="form-container">
+      <h3>Get Balance</h3>
+      <form @submit.prevent="balanceCheck">
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" v-model="userId" required>
+        <label for="IBAN">IBAN:</label>
+        <input type="text" id="IBAN" v-model="IBAN" required>
+        <button type="submit" @click="balanceCheck">Check Balance</button>
+        <p v-if="balanceResult">{{ balanceResult }}</p>
+      </form>
+    </div>
+    <div class="form-container">
+      <h3>Create Account</h3>
+      <form @submit.prevent="createAccount">
+        <label for="accountType">Account Type:</label>
+        <input type="text" id="accountType" v-model="newAccount.accountType" required>
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" v-model="newAccount.userId" required>
+        <button type="submit" @click="createAccount">Create</button>
+        <p v-if="accountCreated">Account created successfully!</p>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -69,7 +91,15 @@
           accountStatus: '',
           transactionLimit: '',
           dayLimit: ''
-        }
+        },
+        userId: '', 
+        IBAN: '', 
+        balanceResult: '',
+        newAccount: {
+          accountType: '',
+           userId: ''
+        },
+        accountCreated: false
       }
     },
     mounted() {
@@ -109,7 +139,7 @@
           absoluteLimit: account.absoluteLimit
         };
       },
-      saveUser() {
+      saveAccount() {
         axios.put(`http://localhost:8080/api/accounts/${this.editingAccountId}`, this.editedAccount)
           .then(() => {
             this.editingAccountId = null;
@@ -121,6 +151,52 @@
               absoluteLimit: ''
             };
             this.getAccounts();
+          });
+      },
+      balanceCheck() {
+        const token = localStorage.getItem('bearerToken');
+        const header = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+        const params = {
+          userId: this.userId,
+          IBAN: this.IBAN
+        };
+
+        axios.get('http://localhost:8080/api/accounts/balance', {
+          headers: header,
+          params: params
+        })
+          .then(response => {
+            // Handle the balance check response
+            this.balanceResult = response.data;
+            console.log(response.data);
+            setTimeout(() => {
+            this.balanceResult = '';
+            }, 3000);
+          })
+          .catch(error => {
+            // Handle error
+            console.error(error);
+          });
+      },
+      createAccount() {
+        const token = localStorage.getItem('bearerToken');
+        const header = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+
+        axios.post('http://localhost:8080/api/accounts', this.newAccount, { headers: header })
+          .then(response => {
+            // Handle the account creation response
+            console.log(response.data);
+            this.getAccounts()
+          })
+          .catch(error => {
+            // Handle error
+            console.error(error);
           });
       }
     }

@@ -3,7 +3,28 @@
    <welcomeview></welcomeview>
 
   <h1>Transactions</h1>
-
+ <table>
+      <thead>
+        <tr>
+          <th>Transaction ID</th>
+          <th>user Id </th>
+          <th>Sender IBAN</th>
+          <th>Receiver IBAN</th>
+          <th>Amount</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="transaction in transactions" :key="transaction.id">
+          <td>{{ transaction.id }}</td>
+          <td>{{ transaction.userId }}</td>
+          <td>{{ transaction.fromIban }}</td>
+          <td>{{ transaction.toIban }}</td>
+          <td>{{ transaction.transferAmount }}</td>
+          <td>{{ transaction.dateOfTransaction }}</td>
+        </tr>
+      </tbody>
+    </table>
   <h2>Create Transaction</h2>
   <table class="form-table">
     <tr>
@@ -30,7 +51,7 @@
   <table class="form-table">
     <tr>
       <td><label for="depositAmount">Amount:</label></td>
-      <td><input type="number" id="depositAmount" v-model="depositAmount" required></td>
+      <td><input type="long" id="depositAmount" v-model="depositAmount" required></td>
     </tr>
     <tr>
       <td><label for="iban">IBAN:</label></td>
@@ -48,7 +69,7 @@
   <table class="form-table">
     <tr>
       <td><label for="amount">Amount:</label></td>
-      <td><input type="number" id="amount" v-model="amount" required></td>
+      <td><input type="long" id="amount" v-model="amount" required></td>
     </tr>
     <tr>
       <td><label for="iban">IBAN:</label></td>
@@ -78,11 +99,11 @@
     </tr>
     <tr>
       <td><label for="to">To:</label></td>
-      <td><input type="to" id="to" v-model="filterTo"></td>
+      <td><input type="date" id="to" v-model="filterTo"></td>
     </tr>
     <tr>
       <td><label for="amount">Amount:</label></td>
-      <td><input type="number" id="amount" v-model="amount"></td>
+      <td><input type="long" id="amount" v-model="amount"></td>
     </tr>
     <tr>
       <td></td>
@@ -91,30 +112,6 @@
             </td>
     </tr>
   </table>
-
-    <h2>Transactions List</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Transaction ID</th>
-          <th>user Id </th>
-          <th>Sender IBAN</th>
-          <th>Receiver IBAN</th>
-          <th>Amount</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="transaction in transactions" :key="transaction.id">
-          <td>{{ transaction.id }}</td>
-          <td>{{ transaction.userId }}</td>
-          <td>{{ transaction.fromIban }}</td>
-          <td>{{ transaction.toIban }}</td>
-          <td>{{ transaction.transferAmount }}</td>
-          <td>{{ transaction.dateOfTransaction }}</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </template>
 
