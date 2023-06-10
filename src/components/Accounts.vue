@@ -64,7 +64,7 @@
         <input type="text" id="accountType" v-model="newAccount.accountType" required>
         <label for="userId">User ID:</label>
         <input type="text" id="userId" v-model="newAccount.userId" required>
-        <button type="submit" @click="createAccount">Create</button>
+        <button type="submit">Create</button>
         <p v-if="accountCreated">Account created successfully!</p>
       </form>
     </div>
