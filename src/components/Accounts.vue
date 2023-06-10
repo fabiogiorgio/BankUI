@@ -32,7 +32,7 @@
     </div>
     <div v-if="editingAccountId" class="form-container">
       <h3>Edit Account</h3>
-      <form @submit.prevent="saveUser">
+      <form @submit.prevent="saveAccount">
         <label for="accountType">Account Type:</label>
         <input type="text" id="accountType" v-model="editedAccount.accountType" required>
         <label for="accountStatus">Account Status:</label>
@@ -43,7 +43,7 @@
         <input type="long" id="dayLimit" v-model="editedAccount.dayLimit" required>
         <label for="absoluteLimit">Absolute Limit:</label>
         <input type="long" id="absoluteLimit" v-model="editedAccount.absoluteLimit" required>
-        <button type="submit" @click="saveAccount()" >Save</button>
+        <button type="submit"  >Save</button>
       </form>
     </div>
     <div class="form-container">
@@ -53,7 +53,7 @@
         <input type="text" id="userId" v-model="userId" required>
         <label for="IBAN">IBAN:</label>
         <input type="text" id="IBAN" v-model="IBAN" required>
-        <button type="submit" @click="balanceCheck">Check Balance</button>
+        <button type="submit">Check Balance</button>
         <p v-if="balanceResult">{{ balanceResult }}</p>
       </form>
     </div>
@@ -143,11 +143,6 @@
         };
       },
       saveAccount() {
-        if(this.isLong(this.editedAccount.transactionLimit) || this.isLong(this.editedAccount.dayLimit) || this.isLong(this.editedAccount.absoluteLimit)  ){
-            this.errorMessage = 'Input must be a number';
-            return;
-        }
-
         axios.put(`http://localhost:8080/api/accounts/${this.editingAccountId}`, this.editedAccount)
           .then(() => {
             this.editingAccountId = null;
@@ -202,9 +197,6 @@
             console.error(error);
           });
       },
-      isLong(value) {
-      return /^\d+$/.test(value);
-      }
     }
   }
   </script>
