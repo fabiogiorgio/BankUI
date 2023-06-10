@@ -28,6 +28,9 @@
           </tr>
         </tbody>
       </table>
+      <div v-if="deactivateUserError" class="error-message">{{ deactivateUserError }}</div>
+      <div v-if="saveUserError" class="error-message">{{ saveUserError }}</div>
+
       <div v-if="editingUserId !== null" class="edit-form">
         <h3>Edit User</h3>
         <form @submit.prevent="saveUser">
@@ -80,7 +83,9 @@ export default {
         mobileNumber: '',
         dateOfBirth: '',
         status: ''
-      }
+      },
+      deactivateUserError: '',
+      saveUserError: '',
     }
   },
   mounted() {
@@ -106,6 +111,12 @@ export default {
       axios.delete(`http://localhost:8080/api/users/${id}`)
         .then(() => {
           this.getUsers();
+        })
+        .catch(error => {
+          this.deactivateUserError = 'Failed to deactivate user: ' + error.response.data.message;
+          setTimeout(() => {
+            this.deactivateUserError = '';
+          }, 3000);
         });
     },
     editUser(id) {
@@ -120,6 +131,15 @@ export default {
       };
     },
     saveUser() {
+      if (this.editedUser.firstName.trim() === '' || this.editedUser.lastName.trim() === '') {
+        this.saveUserError = 'First name and last name are required.';
+        return; 
+      }
+       if (!isNaN(this.editedUser.firstName) || !isNaN(this.editedUser.lastName)) {
+        this.saveUserError = 'First name and last name must contain only letters.';
+        return; 
+      }
+
       axios.put(`http://localhost:8080/api/users/${this.editingUserId}`, this.editedUser)
         .then(() => {
           this.editingUserId = null;
@@ -131,7 +151,12 @@ export default {
             status: ''
           };
           this.getUsers();
-        });
+        }).catch(error => {
+          this.saveUserError = 'Failed to save user: ' + error.response.data.message;
+          setTimeout(() => {
+            this.saveUserError = '';
+          }, 3000);
+      });
     },
     cancelEdit() {
       this.editingUserId = null;
@@ -226,5 +251,9 @@ table th {
 .form-actions button[type="submit"]:hover,
 .form-actions button[type="button"]:hover {
   background-color: #555;
+}
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>

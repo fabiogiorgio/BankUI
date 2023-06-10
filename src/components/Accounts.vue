@@ -43,7 +43,7 @@
         <input type="long" id="dayLimit" v-model="editedAccount.dayLimit" required>
         <label for="absoluteLimit">Absolute Limit:</label>
         <input type="long" id="absoluteLimit" v-model="editedAccount.absoluteLimit" required>
-        <button type="submit">Save</button>
+        <button type="submit" @click="saveAccount()" >Save</button>
       </form>
     </div>
     <div class="form-container">
@@ -68,6 +68,8 @@
         <p v-if="accountCreated">Account created successfully!</p>
       </form>
     </div>
+    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
   </div>
 </template>
 
@@ -76,7 +78,16 @@
   <script>
   import axios from 'axios';
   import WelcomeView from './WelcomeView.vue'
+   const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          const token = localStorage.getItem('bearerToken');
+        const header = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Access-Control-Allow-Origin': 'http://localhost:8081/',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+        };
   
+  axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
   export default {
     name: 'accounts',
     components: {
@@ -99,7 +110,8 @@
           accountType: '',
            userId: ''
         },
-        accountCreated: false
+        accountCreated: false,
+        errorMessage: ''
       }
     },
     mounted() {
@@ -107,15 +119,6 @@
     },
     methods: {
       getAccounts() {
-        const token = localStorage.getItem('bearerToken');
-        const header = {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Bearer ${token}`,
-          'Access-Control-Allow-Origin': 'http://localhost:8081/',
-          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-        };
-  
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
         axios.get('http://localhost:8080/api/accounts', { headers: header })
           .then(response => {
             this.accounts = response.data;
@@ -140,6 +143,11 @@
         };
       },
       saveAccount() {
+        if(this.isLong(this.editedAccount.transactionLimit) || this.isLong(this.editedAccount.dayLimit) || this.isLong(this.editedAccount.absoluteLimit)  ){
+            this.errorMessage = 'Input must be a number';
+            return;
+        }
+
         axios.put(`http://localhost:8080/api/accounts/${this.editingAccountId}`, this.editedAccount)
           .then(() => {
             this.editingAccountId = null;
@@ -154,6 +162,15 @@
           });
       },
       balanceCheck() {
+        if (!uuidPattern.test(this.userId)) {
+          this.errorMessage = 'Invalid userId format.';
+          return;
+        }
+        if(!isNaN(this.IBAN)){
+          this.errorMessage = 'Invalid IBAN format.';
+          return;
+        }
+
         const token = localStorage.getItem('bearerToken');
         const header = {
           'Content-Type': 'application/json',
@@ -169,35 +186,30 @@
           params: params
         })
           .then(response => {
-            // Handle the balance check response
             this.balanceResult = response.data;
-            console.log(response.data);
             setTimeout(() => {
             this.balanceResult = '';
             }, 3000);
           })
           .catch(error => {
-            // Handle error
-            console.error(error);
+            this.errorMessage = 'Something went wrong: ' + error.response.data.message;
+            setTimeout(() => {
+            this.errorMessage = '';
+            }, 3000);
           });
       },
       createAccount() {
-        const token = localStorage.getItem('bearerToken');
-        const header = {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        };
-
         axios.post('http://localhost:8080/api/accounts', this.newAccount, { headers: header })
           .then(response => {
-            // Handle the account creation response
             console.log(response.data);
             this.getAccounts()
           })
           .catch(error => {
-            // Handle error
             console.error(error);
           });
+      },
+      isLong(value) {
+      return /^\d+$/.test(value);
       }
     }
   }
@@ -291,6 +303,10 @@
 
 .form-container button[type="submit"]:hover {
   background-color: #555;
+}
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 
   </style>
