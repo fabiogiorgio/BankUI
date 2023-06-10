@@ -118,6 +118,13 @@
 <script>
 import axios from 'axios';
 import WelcomeView from './WelcomeView.vue'
+const token = localStorage.getItem('bearerToken');
+const header = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Authorization': `Bearer ${token}`,
+    'Access-Control-Allow-Origin': 'http://localhost:8081/',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+};
 export default {
     name: 'Transactions',
     components: {
@@ -137,14 +144,6 @@ export default {
   },
   methods: {
     getTransactions() {
-      const token = localStorage.getItem('bearerToken');
-        const header = {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Bearer ${token}`,
-          'Access-Control-Allow-Origin': 'http://localhost:8081/',
-          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-        };
-  
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
         axios.get('http://localhost:8080/api/transactions', { headers: header })
           .then(response => {
@@ -224,12 +223,11 @@ export default {
       from: this.from,
       to: this.to,
       amount: this.amount
-    };
+      };
 
     axios.get(`http://localhost:8080/api/transactions/${this.IBAN}`, { params: filters })
       .then(response => {
         const filteredTransactions = response.data;
-        console.log(filteredTransactions);
         this.transactions = filteredTransactions;
 
         this.filterSuccessMessage = 'Transactions filtered successfully!';

@@ -28,6 +28,21 @@
           </tr>
         </tbody>
       </table>
+  <h2>Filter Users</h2>
+  <table class="form-table">
+    <tr>
+      <td><label for="userName">User Name:</label></td>
+      <td><input type="text" id="userName" v-model="userName" required></td>
+    </tr>
+    <tr>
+      <td><label for="mobileNumber">mobileNumber:</label></td>
+      <td><input type="text" id="mobileNumber" v-model="mobileNumber"></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><button type="submit" @click="getUsersByUserNameAndPhoneNumber">Filter</button>            </td>
+    </tr>
+  </table>
       <div v-if="deactivateUserError" class="error-message">{{ deactivateUserError }}</div>
       <div v-if="saveUserError" class="error-message">{{ saveUserError }}</div>
 
@@ -67,7 +82,13 @@
 <script>
 import axios from 'axios';
 import WelcomeView from './WelcomeView.vue'
-
+const token = localStorage.getItem('bearerToken');
+      const header = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Access-Control-Allow-Origin': 'http://localhost:8081/',
+        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+};
 export default {
   name: 'Users',
   components: {
@@ -93,16 +114,8 @@ export default {
   },
   methods: {
     getUsers() {
-      const token = localStorage.getItem('bearerToken');
-      const header = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Bearer ${token}`,
-        'Access-Control-Allow-Origin': 'http://localhost:8081/',
-        'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-      };
-
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-      axios.get('http://localhost:8080/api/users', { headers: header })
+      axios.get('http://localhost:8080/api/users')
         .then(response => {
           this.users = response.data;
         });
@@ -167,6 +180,17 @@ export default {
         dateOfBirth: '',
         status: ''
       };
+    },
+    getUsersByUserNameAndPhoneNumber(){
+      const filters = {
+      mobileNumber: this.mobileNumber,
+      userName: this.userName,
+      };
+      axios.get('http://localhost:8080/api/users/findUsers', { params: filters })
+        .then(response => {
+          const userData = response.data;
+          this.users = Array.isArray(userData) ? userData : [userData];
+        });
     }
   }
 }

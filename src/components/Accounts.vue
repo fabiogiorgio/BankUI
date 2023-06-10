@@ -79,13 +79,13 @@
   import axios from 'axios';
   import WelcomeView from './WelcomeView.vue'
    const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-          const token = localStorage.getItem('bearerToken');
-        const header = {
+   const token = localStorage.getItem('bearerToken');
+   const header = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
           'Access-Control-Allow-Origin': 'http://localhost:8081/',
           'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-        };
+    };
   
   axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
   export default {
@@ -170,12 +170,6 @@
           this.errorMessage = 'Invalid IBAN format.';
           return;
         }
-
-        const token = localStorage.getItem('bearerToken');
-        const header = {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        };
         const params = {
           userId: this.userId,
           IBAN: this.IBAN
